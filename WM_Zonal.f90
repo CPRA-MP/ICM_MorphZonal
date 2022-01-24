@@ -18,7 +18,7 @@ program MorphZonal
     integer :: nras
     integer :: dem_res
     integer :: noData
-    integer :: i,j
+    integer :: i,j,k,iz
     integer :: lt
     integer :: n_overlap
     integer :: nzones
@@ -133,7 +133,17 @@ program MorphZonal
     do i = 1,nzones
         do j = 1,5
             zoneID = zoneIDs(i)
-            write(909,1909) trim(adjustL(G_str)),trim(adjustL(S_str)),trim(adjustL(elpsY_str)),lnd_codes(j),zoneID,zone_counts(i,j)*dem_res*dem_res  
+            if ( ANY(overlap==zoneID, dim=1) ) then
+                iz = findloc(overlap,zoneID,1)
+                write(*,'(A,I)') 'overlapping zoneID: ', zoneID
+                do k = 2,3
+                    zoneID = overlap(iz,k)
+                    write(*,'(A,I)') '  re-mapped zoneID: ', zoneID
+                    write(909,1909) trim(adjustL(G_str)),trim(adjustL(S_str)),trim(adjustL(elpsY_str)),lnd_codes(j),zoneID,zone_counts(i,j)*dem_res*dem_res
+                end do
+            else
+                write(909,1909) trim(adjustL(G_str)),trim(adjustL(S_str)),trim(adjustL(elpsY_str)),lnd_codes(j),zoneID,zone_counts(i,j)*dem_res*dem_res  
+            end if
         end do
     end do
     
