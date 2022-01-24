@@ -81,6 +81,9 @@ program MorphZonal
     nzones = 0
     do i=1,nras
         zone = rasZone(i)
+        if (zone > 0) then
+            write(*,*) zone
+        end if
         if ( ANY(zoneIDs == zone) ) then
             ! zoneIDs already contains value for current zone - skip ahead
         else
@@ -94,10 +97,6 @@ program MorphZonal
             write(*,'(A,I,A)') ' Code is limited to ',nzones_max,' summary zones. Exiting now.'
             exit
         end if
-    end do
-    
-    do i = 1,nzones
-        write(*,*) 'zone:',zoneIDs(i)
     end do
 
     write(*,'(A)') 'Reading in table of zoneIDs that overlap.'
