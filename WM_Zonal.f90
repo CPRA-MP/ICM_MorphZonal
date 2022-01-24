@@ -133,8 +133,8 @@ program MorphZonal
     do i = 1,nzones
         do j = 1,5
             zoneID = zoneIDs(i)
-            if ( ANY(overlap==zoneID, dim=1) ) then
-                iz = findloc(overlap,zoneID,1)
+            if ( ANY(overlap[1,:] == zoneID) ) then
+                iz = findloc(overlap[1,:],zoneID,1)
                 write(*,'(A,I)') 'overlapping zoneID: ', zoneID
                 do k = 2,3
                     zoneID = overlap(iz,k)
