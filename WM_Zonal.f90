@@ -30,6 +30,7 @@ program MorphZonal
     integer,dimension(:),allocatable :: rasLW
     integer,dimension(:),allocatable :: rasZone
     integer, dimension(:),allocatable :: zoneIDs
+    integer, dimension(:),allocatable :: overlap_zones
     integer, dimension(:,:),allocatable :: overlap
     integer, dimension(:,:),allocatable :: zone_counts
     character*3,dimension(:),allocatable :: lnd_codes               ! array of land-type codes used in output summary file
@@ -56,12 +57,14 @@ program MorphZonal
     allocate(rasLW(nras))
     allocate(rasZone(nras))
     allocate(zoneIDs(nzones_max))
-    allocate(overlap(n_overlap,3))
+    allocate(overlap_zones(n_overlap))
+    allocate(overlap(n_overlap,2))
     
-    rasLW   = 0
-    rasZone = 0
-    zoneIDs = 0
-    overlap = 0
+    rasLW           = 0
+    rasZone         = 0
+    zoneIDs         = 0
+    overlap_zones   = 0
+    overlap         = 0
     
     write(*,'(a,a)') 'summarizing:  ', trim(adjustL(rasLW_bin_pth))
     write(*,'(a,a)') '   by zones:  ', trim(adjustL(rasZone_bin_pth))
@@ -98,9 +101,9 @@ program MorphZonal
     open(unit=1111, file=trim(adjustL(overlapping_zone_pth)))
     read(1111,*) dump_txt                                           ! dump header
     do i = 1,n_overlap
-        read(1111,*) overlap(i,1),                          &       ! zoneID equal to the sum of the two overlapping ElementID values
-   &                 overlap(i,2),                          &       ! ElementID for first of two overlapping zones
-   &                 overlap(i,3)                                   ! ElementID for second of two overlapping zones
+        read(1111,*) overlap_zones(i),                      &       ! zoneID equal to the sum of the two overlapping ElementID values
+   &                 overlap(i,1),                          &       ! ElementID for first of two overlapping zones
+   &                 overlap(i,2)                                   ! ElementID for second of two overlapping zones
     end do
     close(1111)
     
@@ -133,10 +136,10 @@ program MorphZonal
     do i = 1,nzones
         do j = 1,5
             zoneID = zoneIDs(i)
-            if ( ANY(overlap[1,:] == zoneID) ) then
-                iz = findloc(overlap[1,:],zoneID,1)
+            if ( ANY(overlap_zones == zoneID) ) then
+                iz = findloc(overlap_zones,zoneID,1)
                 write(*,'(A,I)') 'overlapping zoneID: ', zoneID
-                do k = 2,3
+                do k = 1,2
                     zoneID = overlap(iz,k)
                     write(*,'(A,I)') '  re-mapped zoneID: ', zoneID
                     write(909,1909) trim(adjustL(G_str)),trim(adjustL(S_str)),trim(adjustL(elpsY_str)),lnd_codes(j),zoneID,zone_counts(i,j)*dem_res*dem_res
