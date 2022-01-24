@@ -96,6 +96,9 @@ program MorphZonal
         end if
     end do
     
+    do i = 1,nzones
+        write(*,*) 'zone:',zoneIDs(i)
+    end do
 
     write(*,'(A)') 'Reading in table of zoneIDs that overlap.'
     open(unit=1111, file=trim(adjustL(overlapping_zone_pth)))
