@@ -89,9 +89,6 @@ program MorphZonal
     nzones = 0
     do i=1,nras
         zone = rasZone(i)
-        if (zone > 0) then
-            write(*,*) zone
-        end if
         if ( ANY(zoneIDs == zone) ) then
             ! zoneIDs already contains value for current zone - skip ahead
         else
