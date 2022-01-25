@@ -2,7 +2,9 @@ program MorphZonal
 
     implicit none
     
-    integer,parameter :: sp=selected_real_kind(p=6) 
+    integer,parameter :: sp=selected_real_kind(p=6)                 ! determine compiler KIND value for 4-byte (single precision) floating point real numbers
+    integer,parameter :: dp=selected_real_kind(p=15)                ! determine compiler KIND value for 8-byte (double precision) floating point real numbers
+
     character*1000 :: dump_txt
     character*100 :: rasLW_bin_pth
     character*100 :: rasZone_bin_pth
@@ -28,7 +30,7 @@ program MorphZonal
     integer :: zoneID_index
     
     integer,dimension(:),allocatable :: rasLW
-    integer,dimension(:),allocatable :: rasZone
+    integer(dp),dimension(:),allocatable :: rasZone
     integer, dimension(:),allocatable :: zoneIDs
     integer, dimension(:),allocatable :: overlap_zones
     integer, dimension(:,:),allocatable :: overlap
