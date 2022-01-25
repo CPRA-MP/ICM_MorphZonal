@@ -30,7 +30,7 @@ program MorphZonal
     integer :: zoneID_index
     
     integer,dimension(:),allocatable :: rasLW
-    integer(dp),dimension(:),allocatable :: rasZone
+    integer,dimension(:),allocatable :: rasZone
     integer, dimension(:),allocatable :: zoneIDs
     integer, dimension(:),allocatable :: overlap_zones
     integer, dimension(:,:),allocatable :: overlap
