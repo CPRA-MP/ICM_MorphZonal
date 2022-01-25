@@ -4,23 +4,28 @@ program MorphZonal
     
     integer,parameter :: sp=selected_real_kind(p=6)                 ! determine compiler KIND value for 4-byte (single precision) floating point real numbers
     integer,parameter :: dp=selected_real_kind(p=15)                ! determine compiler KIND value for 8-byte (double precision) floating point real numbers
-
+    
+    character*1000 :: rundir
     character*1000 :: dump_txt
-    character*1000 :: rasLW_bin_pth
+    character*100 :: rasLW_bin_pth
     character*1000 :: rasZone_bin_pth
     character*1000 :: output_csv_pth
     character*1000 :: overlapping_zone_pth
     character*20 :: n_overlap_str
     character*20 :: noData_str
     character*20 :: nras_str
-    character*20 :: S_str
-    character*20 :: G_str
-    character*20 :: elpsY_str
+    character*3 :: S_str
+    character*4 :: G_str
+    character*2 :: sy_str
+    character*2 :: ey_str
+    character*2 :: ey_str
+    character*20 :: fnc_tag
     
     integer :: dump_int
     integer :: nras
     integer :: dem_res
     integer :: noData
+    integer :: y,sy,ey
     integer :: i,j,k,iz
     integer :: lt
     integer :: n_overlap
@@ -37,22 +42,27 @@ program MorphZonal
     integer, dimension(:,:),allocatable :: overlap
     integer, dimension(:,:),allocatable :: zone_counts
     character*3,dimension(:),allocatable :: lnd_codes               ! array of land-type codes used in output summary file
-
+    
 
     nzones_max = 1000
     dem_res = 30
     
-    call GET_COMMAND_ARGUMENT( 1,rasLW_bin_pth)
-    call GET_COMMAND_ARGUMENT( 2,rasZone_bin_pth)
-    call GET_COMMAND_ARGUMENT( 3,output_csv_pth)
-    call GET_COMMAND_ARGUMENT( 4,overlapping_zone_pth)
-    call GET_COMMAND_ARGUMENT( 5,n_overlap_str)
-    call GET_COMMAND_ARGUMENT( 6,nras_str)
-    call GET_COMMAND_ARGUMENT( 7,noData_str)
-    call GET_COMMAND_ARGUMENT( 8,S_str)
-    call GET_COMMAND_ARGUMENT( 9,G_str)
-    call GET_COMMAND_ARGUMENT(10,elpsY_str)
+
+    call GET_COMMAND_ARGUMENT( 1,rasZone_bin_pth)
+    call GET_COMMAND_ARGUMENT( 2,overlapping_zone_pth)
+    call GET_COMMAND_ARGUMENT( 3,n_overlap_str)
+    call GET_COMMAND_ARGUMENT( 4,nras_str)
+    call GET_COMMAND_ARGUMENT( 5,noData_str)
+    call GET_COMMAND_ARGUMENT( 6,S_str)
+    call GET_COMMAND_ARGUMENT( 7,G_str)
+    call GET_COMMAND_ARGUMENT( 8,sy_str)
+    call GET_COMMAND_ARGUMENT( 9,ey_str)
     
+    rundir = '/ocean/projects/bcs200002p/ewhite12/MP2023/ICM/'//trim(adjustL(S_str))//'/'//trim(adjustL(G_str))//'/geomorph/output'
+    fnc_tag = 'MP2023_'//trim(adjustL(S_str))//'_'//trim(adjustL(G_str))//'_C000_U00_V00_SLA'
+    
+    output_csv_pth = trim(adjustL(rundir))//trim(adjustL(fnc_tag))//'_O_'//trim(adjustL(sy_str))//'_'//trim(adjustL(ey_str))//'_W_MCdir.csv'
+        
     read(n_overlap_str,*) n_overlap
     read(nras_str,*) nras
     read(noData_str,*) noData
@@ -63,19 +73,17 @@ program MorphZonal
     allocate(overlap_zones(n_overlap))
     allocate(overlap(n_overlap,2))
     
-    rasLW           = 0
     rasZone         = 0
     zoneIDs         = 0
     overlap_zones   = 0
     overlap         = 0
-    
-    write(*,'(a,a)') 'summarizing:  ', trim(adjustL(rasLW_bin_pth))
-    write(*,'(a,a)') '   by zones:  ', trim(adjustL(rasZone_bin_pth))
-    
-    open(unit=100, file = trim(adjustL(rasLW_bin_pth)),form='unformatted')
-    read(100) rasLW
-    close(100)
 
+
+    ! open output file and write header    
+    open(unit=909, file=trim(adjustL(output_csv_pth)), position='append')
+    write(909,'(A)') 'prj_no,S,year,code,ElementID,value'
+    
+    ! open raster file containing map of summary zones
     !open(unit=101, file = trim(adjustL(rasZone_bin_pth)),form='unformatted')
     !read(101) rasZone
     !close(101)
@@ -104,7 +112,7 @@ program MorphZonal
         end if
     end do
 
-    write(*,'(A)') 'Reading in table of zoneIDs that overlap.'
+    write(*,'(A)') 'Reading in table of overlapping zoneIDs.'
     open(unit=1111, file=trim(adjustL(overlapping_zone_pth)))
     read(1111,*) dump_txt                                           ! dump header
     do i = 1,n_overlap
@@ -125,40 +133,55 @@ program MorphZonal
     lnd_codes(4) = 'UPL'        !  lt=4: developed land/upland/etc. that are not modeled in ICM-LAVegMod
     lnd_codes(5) = 'FLT'        !  lt=5: flotant marsh 
     
-    write(*,'(A)') 'Summing land type counts for each summary zone.'
-    do i=1,nras
-        if (rasZone(i) > 0) then
-            zoneID = rasZone(i)
-            zoneID_index = findloc(zoneIDs,zoneID,1)
-            lt = rasLW(i)
-            if (lt /= noData) then
-                zone_counts(zoneID_index,lt) = zone_counts(zoneID_index,lt) + 1 
-            end if                                                  
-        end if
-    end do
+    read(sy_str,*) sy
+    read(ey_str,*) ey
     
-    open(unit=909, file=trim(adjustL(output_csv_pth)), position='append')
-    write(909,'(A)') 'prj_no,S,year,code,ElementID,value'
-    
-    do i = 1,nzones
-        do j = 1,5
-            zoneID = zoneIDs(i)
-            if ( ANY(overlap_zones == zoneID) ) then
-                iz = findloc(overlap_zones,zoneID,1)
-                write(*,'(A,I)') 'overlapping zoneID: ', zoneID
-                do k = 1,2
-                    zoneID = overlap(iz,k)
-                    write(*,'(A,I)') '  re-mapped zoneID: ', zoneID
-                    write(909,1909) trim(adjustL(G_str)),trim(adjustL(S_str)),trim(adjustL(elpsY_str)),lnd_codes(j),zoneID,zone_counts(i,j)*dem_res*dem_res
-                end do
-            else
-                write(909,1909) trim(adjustL(G_str)),trim(adjustL(S_str)),trim(adjustL(elpsY_str)),lnd_codes(j),zoneID,zone_counts(i,j)*dem_res*dem_res  
+    do y = sy,ey
+        read(y_str,'(I2)') y 
+        rasLW_bin_pth = trim(adjustL(rundir))//trim(adjustL(fnc_tag))//'_N_'//y_str//'_'//y_str,'_W_lndtyp30.xyz.b'
+        rasLW = 0
+        
+        write(*,'(a,a)') 'tabulating zonal counts for:  ', trim(adjustL(rasLW_bin_pth))
+        open(unit=100, file = trim(adjustL(rasLW_bin_pth)),form='unformatted')
+        read(100) rasLW
+        close(100)
+        
+        ! loop over DEM and analyze landtype for each pixel that is located within a summary zone
+        do i=1,nras
+            if (rasZone(i) > 0) then
+                lt = rasLW(i)
+                if (lt /= noData) then
+                    zoneID = rasZone(i)
+                    zoneID_index = findloc(zoneIDs,zoneID,1)
+                    ! check to see if zone is one that is comprised of two overlapping zones
+                    ! if so, add the area to both zone counts for the two overlapping zones
+                    if ( ANY(overlap_zones == zoneID) ) then
+                        iz = findloc(overlap_zones,zoneID,1)
+                        do k = 1,2
+                            zoneID = overlap(iz,k)
+                            zoneID_index = findloc(zoneIDs,zoneID,1)
+                            zone_counts(zoneID_index,lt) = zone_counts(zoneID_index,lt) + 1
+                        end do
+                    ! if zone is not one that is overlapping, simply add the area to the zone count
+                    else
+                        zone_counts(zoneID_index,lt) = zone_counts(zoneID_index,lt) + 1 
+                    end if                                                  
+                end if
             end if
         end do
+        
+        ! write zonal counts to output file
+        do i = 1,nzones
+            do j = 1,5
+                zoneID = zoneIDs(i)
+                write(909,1909) trim(adjustL(G_str)),trim(adjustL(S_str)),y,lnd_codes(j),zoneID,zone_counts(i,j)*dem_res*dem_res  
+            end do
+        end do
+    
     end do
     
-    close(909)
+    close(909)        
     
-1909    format(4(A,','),I,',',I)    
+1909    format(A,',',A,',',I,',',A,',',I,',',I)    
     
 end program
