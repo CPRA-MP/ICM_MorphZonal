@@ -17,6 +17,7 @@ program MorphZonal
     character*20 :: G_str
     character*20 :: elpsY_str
     
+    integer :: dump_int
     integer :: nras
     integer :: dem_res
     integer :: noData
@@ -75,10 +76,15 @@ program MorphZonal
     read(100) rasLW
     close(100)
 
-    open(unit=101, file = trim(adjustL(rasZone_bin_pth)),form='unformatted')
-    read(101) rasZone
+    !open(unit=101, file = trim(adjustL(rasZone_bin_pth)),form='unformatted')
+    !read(101) rasZone
+    !close(101)
+    open(unit=101, file = trim(adjustL(rasZone_bin_pth)) )
+    do i=1,nras
+        read(101,*) dump_int, dump_int, rasZone(i)
+    end do
     close(101)
-
+    
     write(*,'(A)') 'Identifying zone IDs for use in zonal summaries.'
     nzones = 0
     do i=1,nras
