@@ -18,7 +18,7 @@ program MorphZonal
     character*4 :: G_str
     character*2 :: sy_str
     character*2 :: ey_str
-    character*2 :: ey_str
+    character*2 :: y_str
     character*20 :: fnc_tag
     
     integer :: dump_int
@@ -137,8 +137,8 @@ program MorphZonal
     read(ey_str,*) ey
     
     do y = sy,ey
-        read(y_str,'(I2)') y 
-        rasLW_bin_pth = trim(adjustL(rundir))//trim(adjustL(fnc_tag))//'_N_'//y_str//'_'//y_str,'_W_lndtyp30.xyz.b'
+        read(y,'(I2)') y_str
+        rasLW_bin_pth = trim(adjustL(rundir))//trim(adjustL(fnc_tag))//'_N_'//y_str//'_'//y_str//'_W_lndtyp30.xyz.b'
         rasLW = 0
         
         write(*,'(a,a)') 'tabulating zonal counts for:  ', trim(adjustL(rasLW_bin_pth))
