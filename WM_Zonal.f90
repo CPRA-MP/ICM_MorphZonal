@@ -6,10 +6,10 @@ program MorphZonal
     integer,parameter :: dp=selected_real_kind(p=15)                ! determine compiler KIND value for 8-byte (double precision) floating point real numbers
 
     character*1000 :: dump_txt
-    character*100 :: rasLW_bin_pth
-    character*100 :: rasZone_bin_pth
-    character*100 :: output_csv_pth
-    character*100 :: overlapping_zone_pth
+    character*1000 :: rasLW_bin_pth
+    character*1000 :: rasZone_bin_pth
+    character*1000 :: output_csv_pth
+    character*1000 :: overlapping_zone_pth
     character*20 :: n_overlap_str
     character*20 :: noData_str
     character*20 :: nras_str
