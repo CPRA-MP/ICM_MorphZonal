@@ -124,8 +124,7 @@ program MorphZonal
     
     ! allocate array that will store landtype pixel counts for each zone
     allocate(zone_counts(nzones,5))
-    zone_counts = 0
-    
+        
     allocate(lnd_codes(5))
     lnd_codes(1) = 'LND'        !  lt=1: vegetated wetland
     lnd_codes(2) = 'WAT'        !  lt=2: water                                           
@@ -137,6 +136,7 @@ program MorphZonal
     read(ey_str,*) ey
     
     do y = sy,ey
+        zone_counts = 0     ! initialize counter array to zero at start of year loop
         write(y_str,'(I0.2)') y
                 
         rasLW_bin_pth = trim(adjustL(rundir))//'/'//trim(adjustL(fnc_tag))//'_N_'//y_str//'_'//y_str//'_W_lndtyp30.xyz.b'
