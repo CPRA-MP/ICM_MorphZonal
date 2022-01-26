@@ -61,7 +61,7 @@ program MorphZonal
     rundir = '/ocean/projects/bcs200002p/ewhite12/MP2023/ICM/'//trim(adjustL(S_str))//'/'//trim(adjustL(G_str))//'/geomorph/output'
     fnc_tag = 'MP2023_'//trim(adjustL(S_str))//'_'//trim(adjustL(G_str))//'_C000_U00_V00_SLA'
     
-    output_csv_pth = trim(adjustL(rundir))//trim(adjustL(fnc_tag))//'_O_'//trim(adjustL(sy_str))//'_'//trim(adjustL(ey_str))//'_W_MCdir.csv'
+    output_csv_pth = trim(adjustL(rundir))//'/'//trim(adjustL(fnc_tag))//'_O_'//trim(adjustL(sy_str))//'_'//trim(adjustL(ey_str))//'_W_MCdir.csv'
         
     read(n_overlap_str,*) n_overlap
     read(nras_str,*) nras
@@ -137,9 +137,9 @@ program MorphZonal
     read(ey_str,*) ey
     
     do y = sy,ey
-        write(y_str,'(I2)') y
+        write(y_str,'(I0.2)') y
                 
-        rasLW_bin_pth = trim(adjustL(rundir))//trim(adjustL(fnc_tag))//'_N_'//y_str//'_'//y_str//'_W_lndtyp30.xyz.b'
+        rasLW_bin_pth = trim(adjustL(rundir))//'/'//trim(adjustL(fnc_tag))//'_N_'//y_str//'_'//y_str//'_W_lndtyp30.xyz.b'
         rasLW = 0
         
         write(*,'(a,a)') 'tabulating zonal counts for:  ', trim(adjustL(rasLW_bin_pth))
