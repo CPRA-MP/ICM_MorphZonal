@@ -137,11 +137,7 @@ program MorphZonal
     read(ey_str,*) ey
     
     do y = sy,ey
-        if (y < 10) then
-            y_str = '0'//y
-        else
-            y_str = ''//y
-        end if
+        write(y_str,'I2') y
                 
         rasLW_bin_pth = trim(adjustL(rundir))//trim(adjustL(fnc_tag))//'_N_'//y_str//'_'//y_str//'_W_lndtyp30.xyz.b'
         rasLW = 0
