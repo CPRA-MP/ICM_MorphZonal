@@ -7,10 +7,11 @@ program MorphZonal
     
     character*1000 :: rundir
     character*1000 :: dump_txt
-    character*100 :: rasLW_bin_pth
+    character*1000 :: rasLW_bin_pth
     character*1000 :: rasZone_bin_pth
     character*1000 :: output_csv_pth
     character*1000 :: overlapping_zone_pth
+    character*1000 :: fnc_tag
     character*20 :: n_overlap_str
     character*20 :: noData_str
     character*20 :: nras_str
@@ -19,8 +20,7 @@ program MorphZonal
     character*2 :: sy_str
     character*2 :: ey_str
     character*2 :: y_str
-    character*20 :: fnc_tag
-    
+
     integer :: dump_int
     integer :: nras
     integer :: dem_res
