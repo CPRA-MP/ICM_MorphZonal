@@ -78,11 +78,12 @@ program MorphZonal
     overlap_zones   = 0
     overlap         = 0
 
-
     ! open output file and write header    
+    write(*,'(A,A)') 'Opening output file for writing: ',trim(adjustL(output_csv_pth))
     open(unit=909, file=trim(adjustL(output_csv_pth)), position='append')
     write(909,'(A)') 'prj_no,S,year,code,ElementID,value'
     
+    write(*,'(A)') 'Identifying zone IDs for use in zonal summaries.'
     ! open raster file containing map of summary zones
     !open(unit=101, file = trim(adjustL(rasZone_bin_pth)),form='unformatted')
     !read(101) rasZone
@@ -93,7 +94,6 @@ program MorphZonal
     end do
     close(101)
     
-    write(*,'(A)') 'Identifying zone IDs for use in zonal summaries.'
     nzones = 0
     do i=1,nras
         zone = rasZone(i)
@@ -102,7 +102,7 @@ program MorphZonal
         else
             nzones = nzones + 1
             zoneIDs(nzones) = zone
-            write(*,'(A,I,A,I)') 'ZoneID ',nzones,': ',zone
+            !write(*,'(A,I,A,I)') 'ZoneID ',nzones,': ',zone
         end if
         
         if (nzones > nzones_max) then
@@ -137,7 +137,12 @@ program MorphZonal
     read(ey_str,*) ey
     
     do y = sy,ey
-        read(y,'(I2)') y_str
+        if (y < 10) then
+            y_str = '0'//y
+        else
+            y_str = ''//y
+        end if
+                
         rasLW_bin_pth = trim(adjustL(rundir))//trim(adjustL(fnc_tag))//'_N_'//y_str//'_'//y_str//'_W_lndtyp30.xyz.b'
         rasLW = 0
         
